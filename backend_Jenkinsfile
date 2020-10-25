@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('SCM') {
             steps{
-                git([url: 'git@github.com:leonsite/demo_backend.git', branch: 'master', credentialsId: 'github'])
+                git([url: 'git@github.com:leonsite/demo_backend.git', branch: 'master', credentialsId: '94270fb6-93e9-45ed-8aeb-313e16517b2a'])
 
             }
         }

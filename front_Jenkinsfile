@@ -1,0 +1,37 @@
+Jenkinsfile (Declarative Pipeline)
+pipeline {
+    agent any
+    tools {nodejs "nodejs"}
+    stages {
+        stage('SCM') {
+            steps{
+                git([url: 'git@github.com:leonsite/demo_webfront.git', branch: 'master', credentialsId: 'b817ede2-b6dd-462d-b7d3-272597e18113'])
+            }
+        }
+        stage('SonarQube analysis') {
+            steps{
+                script{
+                    def scannerHome = tool 'SonarQubeScanner';
+                    withSonarQubeEnv('SonarQube') {
+                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=front -Dsonar.projectName=front -Dsonar.sourceEncoding=UTF-8 -Dsonar.host.url=http://192.168.43.172:9000/ "                    
+                    }
+                }
+             
+            }
+        }
+        stage('SonarQube Quality Gate') {
+            steps{
+                script{
+                     timeout(time: 1, unit: 'HOURS') { 
+                        def qg = waitForQualityGate()
+					    if (qg.status != 'OK') {
+					    	error "Pipeline aborted due to quality gate failure: ${qg.status}"
+					   	} else {
+					   		echo qg.status
+					   	}
+					}
+                }             
+            }
+        }
+   }
+}

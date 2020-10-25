@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('SCM') {
             steps{
-                git([url: 'git@github.com:leonsite/demo_webfront.git', branch: 'master', credentialsId: 'b817ede2-b6dd-462d-b7d3-272597e18113'])
+                git([url: 'git@github.com:leonsite/demo_webfront.git', branch: 'master', credentialsId: 'github'])
             }
         }
         stage('SonarQube analysis') {

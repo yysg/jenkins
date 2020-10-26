@@ -1,20 +1,19 @@
 pipeline {
   agent any
-  tools {
-    nodejs 'node12'
-  }
   stages {
     stage('SCM') {
       steps {
         git(url: 'git@github.com:leonsite/demo_webfront.git', branch: 'master', credentialsId: '43dd0fe7-8410-4934-bf65-571e149f31f7')
       }
     }
+
     stage('Build') {
       steps {
         sh 'npm install'
       }
     }
-    stage('SonarQube') {
+
+    stage('Code Analysis') {
       parallel {
         stage('SonarQube') {
           steps {
@@ -25,14 +24,21 @@ pipeline {
                 sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=front -Dsonar.projectName=front -Dsonar.sourceEncoding=UTF-8 -Dsonar.host.url=http://192.168.43.172:9000/ "
               }
             }
+
           }
         }
+
         stage('Tslint') {
           steps {
             sh 'npm run lint'
           }
         }
+
       }
     }
+
+  }
+  tools {
+    nodejs 'node12'
   }
 }

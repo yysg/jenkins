@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('SCM') {
             steps{
-                git([url: 'git@github.com:leonsite/demo_webfront.git', branch: 'master', credentialsId: 'github'])
+                git([url: 'git@github.com:leonsite/demo_webfront.git', branch: 'master', credentialsId: '43dd0fe7-8410-4934-bf65-571e149f31f7'])
             }
         }
         stage('SonarQube analysis') {
@@ -12,6 +12,7 @@ pipeline {
                 script{
                     def scannerHome = tool 'SonarQubeScanner';
                     withSonarQubeEnv('SonarQube') {
+                      // http://192.168.43.172:9000/ is url of sonar server
                         sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=front -Dsonar.projectName=front -Dsonar.sourceEncoding=UTF-8 -Dsonar.host.url=http://192.168.43.172:9000/ "                    
                     }
                 }

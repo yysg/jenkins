@@ -2,7 +2,7 @@ pipeline {
   agent any
   environment {
     GITHUB_CRE_ID = '43dd0fe7-8410-4934-bf65-571e149f31f7'
-    SONAR_SERVER = 'http://192.168.43.172:9000/
+    SONAR_SERVER = 'http://192.168.43.172:9000/'
   }
   stages {
     stage('SCM') {

@@ -1,13 +1,20 @@
 pipeline {
   agent any
+  tools {
+    nodejs 'node12'
+  }
   stages {
     stage('SCM') {
       steps {
         git(url: 'git@github.com:leonsite/demo_webfront.git', branch: 'master', credentialsId: '43dd0fe7-8410-4934-bf65-571e149f31f7')
       }
     }
-
-    stage('SonarQube analysis') {
+    stage('Build') {
+      steps {
+        sh 'npm install'
+      }
+    }
+    stage('SonarQube) {
       parallel {
         stage('SonarQube analysis') {
           steps {
@@ -21,35 +28,12 @@ pipeline {
 
           }
         }
-
-        stage('tslint') {
+        stage('Tslint') {
           steps {
-            sh '''npm run install
-npm run lint'''
+            sh 'npm run lint'
           }
         }
-
       }
     }
-
-    stage('SonarQube Quality Gate') {
-      steps {
-        script {
-          timeout(time: 1, unit: 'HOURS') {
-            def qg = waitForQualityGate()
-            if (qg.status != 'OK') {
-              error "Pipeline aborted due to quality gate failure: ${qg.status}"
-            } else {
-              echo qg.status
-            }
-          }
-        }
-
-      }
-    }
-
-  }
-  tools {
-    nodejs 'node12'
   }
 }

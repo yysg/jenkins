@@ -1,20 +1,23 @@
 pipeline {
   agent any
   tools {
-    // Install the Maven version configured as "M3" and add it to the path.
     maven "M3"
+  }
+  environment {
+    GITHUB_CRE_ID = '43dd0fe7-8410-4934-bf65-571e149f31f7'
+    SONAR_SERVER = 'http://192.168.43.172:9000/
   }
   stages {
     stage('SCM') {
       steps{
-        git([url: 'git@github.com:leonsite/demo_backend.git', branch: 'master', credentialsId: '43dd0fe7-8410-4934-bf65-571e149f31f7'])
+        git([url: 'git@github.com:leonsite/demo_backend.git', branch: 'master', credentialsId: GITHUB_CRE_ID])
 
       }
     }
     stage('SonarQube') {
       steps{
         withSonarQubeEnv('SonarQube') {
-          sh "mvn clean install -Dmaven.test.skip=true sonar:sonar -Dsonar.projectKey=backend -Dsonar.projectName=backend -Dsonar.sourceEncoding=UTF-8 -Dsonar.exclusions=src/test/** -Dsonar.host.url=http://192.168.43.172:9000/ "                
+          sh "mvn clean install -Dmaven.test.skip=true sonar:sonar -Dsonar.projectKey=backend -Dsonar.projectName=backend -Dsonar.sourceEncoding=UTF-8 -Dsonar.exclusions=src/test/** -Dsonar.host.url=${SONAR_SERVER}"                
         }
       }
     }

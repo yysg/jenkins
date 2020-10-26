@@ -11,7 +11,7 @@ pipeline {
 
       }
     }
-    stage('SonarQube analysis') {
+    stage('SonarQube') {
       steps{
         withSonarQubeEnv('SonarQube') {
           sh "mvn clean install -Dmaven.test.skip=true sonar:sonar -Dsonar.projectKey=backend -Dsonar.projectName=backend -Dsonar.sourceEncoding=UTF-8 -Dsonar.exclusions=src/test/** -Dsonar.host.url=http://192.168.43.172:9000/ "                

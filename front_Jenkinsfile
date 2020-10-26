@@ -24,7 +24,8 @@ pipeline {
 
         stage('tslint') {
           steps {
-            sh 'npm run lint'
+            sh '''npm run install
+npm run lint'''
           }
         }
 

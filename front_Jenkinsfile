@@ -31,7 +31,7 @@ npm install'''
 
         stage('Tslint') {
           steps {
-            sh 'ls'
+            sh 'npm run lint'
           }
         }
 

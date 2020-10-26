@@ -30,7 +30,7 @@ pipeline {
 
         stage('Tslint') {
           steps {
-            sh 'npm run lint'
+            sh 'ls'
           }
         }
 

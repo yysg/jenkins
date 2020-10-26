@@ -1,37 +1,54 @@
 pipeline {
-    agent any
-    tools {nodejs "node12"}
-    stages {
-        stage('SCM') {
-            steps{
-                git([url: 'git@github.com:leonsite/demo_webfront.git', branch: 'master', credentialsId: '43dd0fe7-8410-4934-bf65-571e149f31f7'])
-            }
-        }
+  agent any
+  stages {
+    stage('SCM') {
+      steps {
+        git(url: 'git@github.com:leonsite/demo_webfront.git', branch: 'master', credentialsId: '43dd0fe7-8410-4934-bf65-571e149f31f7')
+      }
+    }
+
+    stage('SonarQube analysis') {
+      parallel {
         stage('SonarQube analysis') {
-            steps{
-                script{
-                    def scannerHome = tool 'SonarQubeScanner';
-                    withSonarQubeEnv('SonarQube') {
-                      // http://192.168.43.172:9000/ is url of sonar server
-                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=front -Dsonar.projectName=front -Dsonar.sourceEncoding=UTF-8 -Dsonar.host.url=http://192.168.43.172:9000/ "                    
-                    }
-                }
-             
+          steps {
+            script {
+              def scannerHome = tool 'SonarQubeScanner';
+              withSonarQubeEnv('SonarQube') {
+                // http://192.168.43.172:9000/ is url of sonar server
+                sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=front -Dsonar.projectName=front -Dsonar.sourceEncoding=UTF-8 -Dsonar.host.url=http://192.168.43.172:9000/ "
+              }
             }
+
+          }
         }
-        stage('SonarQube Quality Gate') {
-            steps{
-                script{
-                     timeout(time: 1, unit: 'HOURS') { 
-                        def qg = waitForQualityGate()
-                        if (qg.status != 'OK') {
-                          error "Pipeline aborted due to quality gate failure: ${qg.status}"
-                        } else {
-                          echo qg.status
-                        }
-                    }
-                }             
+
+        stage('tslint') {
+          steps {
+            sh 'npm run lint'
+          }
+        }
+
+      }
+    }
+
+    stage('SonarQube Quality Gate') {
+      steps {
+        script {
+          timeout(time: 1, unit: 'HOURS') {
+            def qg = waitForQualityGate()
+            if (qg.status != 'OK') {
+              error "Pipeline aborted due to quality gate failure: ${qg.status}"
+            } else {
+              echo qg.status
             }
+          }
         }
-   }
+
+      }
+    }
+
+  }
+  tools {
+    nodejs 'node12'
+  }
 }
